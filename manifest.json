@@ -2,7 +2,8 @@
   "name": "NeuroHabit",
   "short_name": "NeuroHabit",
   "description": "Neuroscience-based daily habit tracker",
-  "start_url": "/index.html",
+  "start_url": "/neurohabit/index.html",
+  "scope": "/neurohabit/",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#1c1a17",
@@ -26,7 +27,7 @@
   "shortcuts": [
     {
       "name": "Today's Habits",
-      "url": "/index.html",
+      "url": "/neurohabit/index.html",
       "description": "Open today's habit tracker"
     }
   ]

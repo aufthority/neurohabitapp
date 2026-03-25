@@ -440,6 +440,18 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
 .install-btn { padding: 8px 13px; border-radius: 8px; background: var(--coach); border: none; color: var(--text); font-family: 'Geist', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .install-dismiss { background: none; border: none; color: var(--muted); font-size: 16px; cursor: pointer; padding: 4px; }
 
+/* ═══ TOAST NOTIFICATIONS ════════════════════════════════════ */
+#toast-container { position: fixed; top: calc(var(--safe-t) + 90px); left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; width: 90%; max-width: 360px; }
+.toast { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius-sm); padding: 11px 15px; font-size: 13px; color: var(--text); box-shadow: 0 6px 24px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 9px; pointer-events: auto; animation: toastIn 0.22s cubic-bezier(.4,0,.2,1); width: 100%; }
+.toast.toast-error  { border-left: 3px solid #b85070; }
+.toast.toast-success { border-left: 3px solid #4a9e82; }
+.toast.toast-info   { border-left: 3px solid #7c6ab8; }
+.toast-icon { font-size: 15px; flex-shrink: 0; }
+.toast-msg  { flex: 1; line-height: 1.4; }
+.toast-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 0 0 0 4px; flex-shrink: 0; }
+@keyframes toastIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-6px); } }
+
 /* ═══ PROFILE PAGE ═══════════════════════════════════════════ */
 .profile-page-inner { padding: 20px 18px 40px; }
 
@@ -1284,6 +1296,8 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
 </div>
 
 <!-- PWA Install Banner -->
+<div id="toast-container"></div>
+
 <div class="install-banner" id="installBanner">
   <div class="install-banner-text"><strong>Install NeuroHabit</strong><span>Add to home screen for offline access</span></div>
   <button class="install-btn" onclick="triggerInstall()">Install</button>
@@ -1886,7 +1900,7 @@ function editCommit(type) {
   if (!c) return;
   const elapsed = Date.now() - c.ts;
   if (elapsed > EDIT_WINDOW_MS) {
-    alert('The 60-minute edit window has passed. This entry is now locked.');
+    showToast('The 60-minute edit window has passed. This entry is now locked.', 'info');
     return;
   }
   c.editMode = true;
@@ -2515,8 +2529,8 @@ function buildShareText() {
 
 function copyShareText() {
   navigator.clipboard.writeText(buildShareText())
-    .then(() => alert('Score copied to clipboard!'))
-    .catch(() => alert(buildShareText()));
+    .then(() => showToast('Score copied to clipboard!', 'success'))
+    .catch(() => showToast(buildShareText(), 'info'));
 }
 
 function nativeShare() {
@@ -2525,8 +2539,8 @@ function nativeShare() {
     navigator.share({ title: 'My NeuroHabit Score', text }).catch(() => {});
   } else {
     navigator.clipboard.writeText(text)
-      .then(() => alert('Score copied to clipboard!'))
-      .catch(() => alert(text));
+      .then(() => showToast('Score copied to clipboard!', 'success'))
+      .catch(() => showToast('Could not copy. Try sharing manually.', 'error'));
   }
 }
 
@@ -2888,8 +2902,30 @@ document.querySelectorAll('.nav-tab').forEach(btn => {
 });
 
 /* ═══════════════════════════════════════════════════════════
+   TOAST NOTIFICATIONS (replaces alert() — UX-03)
+   ═══════════════════════════════════════════════════════════ */
+function showToast(msg, type = 'info', duration = 3500) {
+  const container = document.getElementById('toast-container');
+  const icons = { error: '⚠️', success: '✓', info: '💬' };
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `
+    <span class="toast-icon">${icons[type] || icons.info}</span>
+    <span class="toast-msg">${msg}</span>
+    <button class="toast-close" onclick="this.parentElement.remove()">✕</button>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = 'toastOut 0.2s ease forwards';
+    setTimeout(() => toast.remove(), 200);
+  }, duration);
+}
+
+/* ═══════════════════════════════════════════════════════════
    AUTH (Firebase)
    ═══════════════════════════════════════════════════════════ */
+
+/* EG-03: Guard against double launchApp() calls */
+let appLaunched = false;
 
 /* Listen for sign-in/out — replaces the DOMContentLoaded auto-login */
 auth.onAuthStateChanged((user) => {
@@ -2898,9 +2934,9 @@ auth.onAuthStateChanged((user) => {
     userData.email    = user.email;
     userData.skipAuth = false;
     sv(UK, userData);
-    launchApp();
+    if (!appLaunched) launchApp();
   } else if (userData.skipAuth) {
-    launchApp(); // guest session continues as before
+    if (!appLaunched) launchApp(); // guest session continues as before
   }
   // else: stay on login screen
 });
@@ -2908,16 +2944,16 @@ auth.onAuthStateChanged((user) => {
 function handleLogin() {
   const email = document.getElementById('loginEmail').value.trim();
   const pass  = document.getElementById('loginPassword').value;
-  if (!email || !pass) { alert('Please enter your email and password.'); return; }
+  if (!email || !pass) { showToast('Please enter your email and password.', 'error'); return; }
   auth.signInWithEmailAndPassword(email, pass)
-    .catch(err => alert('Login failed: ' + err.message));
+    .catch(err => showToast('Login failed: ' + err.message, 'error'));
 }
 function handleSignup() {
   const email = document.getElementById('loginEmail').value.trim();
   const pass  = document.getElementById('loginPassword').value;
-  if (!email || !pass) { alert('Enter email and password.'); return; }
+  if (!email || !pass) { showToast('Enter email and password.', 'error'); return; }
   auth.createUserWithEmailAndPassword(email, pass)
-    .catch(err => alert('Sign-up failed: ' + err.message));
+    .catch(err => showToast('Sign-up failed: ' + err.message, 'error'));
 }
 let googleSignInInProgress = false;
 function signInWithGoogle() {
@@ -2926,12 +2962,12 @@ function signInWithGoogle() {
   auth.signInWithPopup(gprov)
     .catch(err => {
       if (err.code !== 'auth/cancelled-popup-request') {
-        alert('Google sign-in failed: ' + err.message);
+        showToast('Google sign-in failed: ' + err.message, 'error');
       }
     })
     .finally(() => { googleSignInInProgress = false; });
 }
-function skipLogin() { userData.skipAuth = true; sv(UK, userData); launchApp(); }
+function skipLogin() { userData.skipAuth = true; sv(UK, userData); if (!appLaunched) launchApp(); }
 
 /* ═══════════════════════════════════════════════════════════
    PROFILE PAGE
@@ -2958,7 +2994,7 @@ function editProfile() {
   const newName = prompt('Enter your display name:', current);
   if (newName === null) return; // cancelled
   const trimmed = newName.trim();
-  if (!trimmed) { alert('Name cannot be empty.'); return; }
+  if (!trimmed) { showToast('Name cannot be empty.', 'error'); return; }
   userData.name = trimmed;
   sv(UK, userData);
   renderProfile();
@@ -2966,10 +3002,10 @@ function editProfile() {
 }
 
 function changePassword() {
-  if (!auth.currentUser) { alert('No signed-in account.'); return; }
+  if (!auth.currentUser) { showToast('No signed-in account.', 'error'); return; }
   auth.sendPasswordResetEmail(auth.currentUser.email)
-    .then(() => alert('Password reset email sent to ' + auth.currentUser.email))
-    .catch(err => alert('Error: ' + err.message));
+    .then(() => showToast('Password reset email sent to ' + auth.currentUser.email, 'success'))
+    .catch(err => showToast('Error: ' + err.message, 'error'));
 }
 
 function handleSignOut() {
@@ -2995,6 +3031,7 @@ function handleSignOut() {
    LAUNCH & INIT
    ═══════════════════════════════════════════════════════════ */
 function launchApp() {
+  appLaunched = true;
   document.getElementById('screen-login').classList.remove('screen-active');
   document.getElementById('screen-login').style.display = 'none';
   document.getElementById('screen-app').style.display = 'flex';
@@ -3002,6 +3039,14 @@ function launchApp() {
   document.getElementById('appHeader').style.display = 'flex';
   document.getElementById('bottomNav').style.display = 'flex';
   initApp();
+
+  /* EG-01: Midnight rollover — reload app when user returns after date change */
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      const currentDay = new Date().toISOString().slice(0, 10);
+      if (currentDay !== today) location.reload();
+    }
+  });
 }
 
 function initApp() {
@@ -3048,6 +3093,7 @@ if ('serviceWorker' in navigator) {
 /* ═══════════════════════════════════════════════════════════
    EXPOSE FUNCTIONS GLOBALLY (required for onclick handlers)
    ═══════════════════════════════════════════════════════════ */
+window.showToast          = showToast;
 window.signInWithGoogle   = signInWithGoogle;
 window.skipLogin          = skipLogin;
 window.handleSignOut      = handleSignOut;

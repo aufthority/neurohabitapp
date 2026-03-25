@@ -1574,7 +1574,17 @@ function renderSection(type) {
       isFlex ? 'flex-active' : ''
     ].filter(Boolean).join(' ');
     row.style.setProperty('--ac', `var(--${type})`);
-
+    /* UX-05: Keyboard & screen reader accessibility */
+    row.setAttribute('role', 'checkbox');
+    row.setAttribute('aria-checked', isDone ? 'true' : 'false');
+    row.setAttribute('aria-label', displayLabel);
+    row.setAttribute('tabindex', '0');
+    row.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        toggleHabit(key, type, i);
+      }
+    });
     // Build flex control HTML
     let flexCtrlHTML = '';
     if (isMulti) {
@@ -1608,7 +1618,7 @@ function renderSection(type) {
       <div class="habit-right">
         <div style="display:flex;align-items:center;gap:5px;">
           <div class="weight-badge">${stars} ${w}</div>
-          <button class="habit-info-btn" title="What counts as this habit?">
+          <button class="habit-info-btn" title="What counts as this habit?" aria-label="Info: ${h.label}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
             </svg>
@@ -2575,22 +2585,31 @@ function checkStreak() {
     const twoDaysAgo = new Date(); twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
     const twoKey = twoDaysAgo.toISOString().slice(0, 10);
     const prevDate = streak.lastDate;
-    // Continue streak if last activity was yesterday OR two days ago (grace day)
-    const isGrace = prevDate === twoKey;
-    if (prevDate === yKey || isGrace) {
+
+    /* BV-06: null lastDate means first ever use — treat as new streak start,
+       not a grace scenario. null === twoKey is always false so isGrace is
+       correctly false here, but we make this explicit for clarity. */
+    const isNormalDay = prevDate === yKey;
+    const isGrace     = !isNormalDay && prevDate === twoKey;
+
+    if (isNormalDay || isGrace) {
       streak.count = streak.count + 1;
     } else {
+      // Broken streak (gap > 1 grace day) or first ever use
       streak.count = 1;
     }
+
     streak.lastDate  = today;
-    streak.graceUsed = isGrace;
+    /* EG-06: Clear graceUsed on a normal (non-grace) day so the badge
+       disappears once the user is back to a regular daily cadence. */
+    streak.graceUsed = isGrace ? true : false;
     sv(STK, streak);
   }
 
   const streakEl = document.getElementById('streakNum');
   streakEl.textContent = streak.count || 0;
 
-  // Show grace badge if grace day was used recently
+  // Show grace badge only when grace day was used on this exact streak run
   const existingGrace = document.querySelector('.grace-badge');
   if (existingGrace) existingGrace.remove();
   if (streak.graceUsed) {

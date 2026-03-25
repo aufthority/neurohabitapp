@@ -343,15 +343,18 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
 .share-score-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border2); background: var(--surface); color: var(--text); font-family: 'Geist', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; margin-bottom: 12px; }
 .share-score-btn:hover { background: var(--surface2); }
 
-/* Insight cards */
-.insight-cards { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
-.insight-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 13px; display: flex; gap: 11px; align-items: flex-start; position: relative; overflow: hidden; }
-.insight-card::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 0 2px 2px 0; background: var(--ins-color, var(--muted)); }
-.insight-card.good::after { background: var(--serotonin); }
-.insight-icon { width: 30px; height: 30px; border-radius: 8px; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
-.insight-card.good .insight-icon { background: color-mix(in srgb, var(--serotonin) 14%, var(--surface2)); }
-.insight-text strong { display: block; font-size: 13px; font-weight: 600; margin-bottom: 2px; line-height: 1.3; }
-.insight-text span { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+/* Next-up improvement summary */
+.improve-summary { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 13px 14px; margin-bottom: 14px; }
+.improve-summary-head { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 9px; }
+.improve-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+.improve-row:last-child { border-bottom: none; padding-bottom: 0; }
+.improve-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.improve-body { flex: 1; min-width: 0; }
+.improve-body strong { display: block; font-size: 12.5px; font-weight: 600; color: var(--text); line-height: 1.2; }
+.improve-body span { font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+.improve-pct { font-family: 'Instrument Serif', serif; font-size: 16px; font-weight: 400; flex-shrink: 0; }
+.improve-done { opacity: 0.45; }
+.improve-done .improve-body strong { text-decoration: line-through; text-decoration-color: var(--subtle); }
 
 /* Week dots */
 .week-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 13px; margin-bottom: 14px; }
@@ -788,6 +791,31 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
   animation: fadeIn 0.4s ease 0.4s both;
 }
 
+/* ═══ PREMIUM COLLAPSIBLE ════════════════════════════════════ */
+.premium-collapse-wrap { margin-bottom: 10px; }
+.premium-collapse-btn {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 14px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border2); background: var(--surface2);
+  color: var(--muted); font-family: 'Geist', sans-serif;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: all 0.2s; margin-bottom: 0;
+}
+.premium-collapse-btn:hover { color: var(--text); border-color: var(--border); }
+.premium-collapse-btn.open { color: var(--text); border-color: var(--border); border-radius: var(--radius-sm) var(--radius-sm) 0 0; margin-bottom: 0; }
+.premium-collapse-chevron { font-size: 14px; transition: transform 0.25s; }
+.premium-collapse-btn.open .premium-collapse-chevron { transform: rotate(180deg); }
+.premium-collapse-body {
+  border: 1px solid var(--border2); border-top: none;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  overflow: hidden;
+}
+.premium-collapse-body .premium-preview-block {
+  margin-bottom: 0; border-radius: 0; border-left: none; border-right: none; border-bottom: none;
+}
+.premium-collapse-body .premium-preview-block:first-child { border-top: none; }
+.premium-collapse-body .premium-preview-block + .premium-preview-block { border-top: 1px solid var(--border); }
+
 /* ═══ RESPONSIVE ═════════════════════════════════════════════ */
 @media (min-width: 520px) {
   .habit-list, .pips-row { padding-left: 20px; padding-right: 20px; }
@@ -901,7 +929,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
           Share Today's Score
         </button>
-        <div class="insight-cards" id="insightCards"></div>
+        <div class="improve-summary" id="improveSummary"></div>
         <!-- ADHD: Daily Focus Mode -->
         <div class="focus-mode-banner" id="focusModeBanner">
           <h3>⚡ Today's Focus — Top 3 Habits</h3>
@@ -917,65 +945,69 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
         </div>
         <button class="new-day-btn" onclick="confirmNewDay()">🌅 New Day — Reset Today</button>
 
-        <!-- ── PREMIUM FEATURES — BETA (unlocked for testing) ── -->
+        <!-- ── PREMIUM FEATURES — collapsible ── -->
+        <div class="premium-collapse-wrap">
+          <button class="premium-collapse-btn" id="premiumToggleBtn" onclick="togglePremiumPanel()">
+            <span>⭐ Premium Insights</span>
+            <span class="premium-collapse-chevron" id="premiumChevron">▾</span>
+          </button>
+          <div class="premium-collapse-body" id="premiumCollapseBody" style="display:none">
 
-        <!-- 1. Weekly trend chart — real data from weekData -->
-        <div class="premium-preview-block">
-          <div class="premium-preview-header">
-            <span class="premium-preview-title">📈 Weekly Score Trend</span>
-            <span class="beta-tag">⭐ Premium</span>
-          </div>
-          <div class="premium-chart-live" id="weeklyTrendChart"></div>
-          <p class="premium-preview-desc">Your Hero Score across this week. Spot patterns, protect your streak, and understand what a strong day looks like for your brain.</p>
-          <button class="beta-feedback-btn" onclick="alert('Thanks for testing! Share feedback: what would make this chart more useful?')">💬 Give Feedback</button>
-        </div>
+            <!-- 1. Weekly trend chart -->
+            <div class="premium-preview-block">
+              <div class="premium-preview-header">
+                <span class="premium-preview-title">📈 Weekly Score Trend</span>
+                <span class="beta-tag">⭐ Premium</span>
+              </div>
+              <div class="premium-chart-live" id="weeklyTrendChart"></div>
+              <p class="premium-preview-desc">Your Hero Score across this week. Spot patterns, protect your streak, and understand what a strong day looks like for your brain.</p>
+            </div>
 
-        <!-- 2. Per-category streaks — live computed -->
-        <div class="premium-preview-block">
-          <div class="premium-preview-header">
-            <span class="premium-preview-title">🔥 Category Streaks</span>
-            <span class="beta-tag">⭐ Premium</span>
-          </div>
-          <div class="premium-cat-streaks" id="catStreaksPanel"></div>
-          <p class="premium-preview-desc">Consecutive days you hit each neurochemical category (≥50% score). See where you're consistent and where you need more focus.</p>
-          <button class="beta-feedback-btn" onclick="alert('Thanks for testing! Share feedback: what streak milestone would motivate you most?')">💬 Give Feedback</button>
-        </div>
+            <!-- 2. Per-category streaks -->
+            <div class="premium-preview-block">
+              <div class="premium-preview-header">
+                <span class="premium-preview-title">🔥 Category Streaks</span>
+                <span class="beta-tag">⭐ Premium</span>
+              </div>
+              <div class="premium-cat-streaks" id="catStreaksPanel"></div>
+              <p class="premium-preview-desc">Consecutive days you hit each neurochemical category (≥50% score). See where you're consistent and where you need more focus.</p>
+            </div>
 
-        <!-- 3. Personal bests & milestones — live computed -->
-        <div class="premium-preview-block">
-          <div class="premium-preview-header">
-            <span class="premium-preview-title">🏅 Personal Bests</span>
-            <span class="beta-tag">⭐ Premium</span>
-          </div>
-          <div class="premium-milestones-live" id="milestonesPanel"></div>
-          <p class="premium-preview-desc">Your best recorded moments — tracked automatically as you use the app each day.</p>
-          <button class="beta-feedback-btn" onclick="alert('Thanks for testing! Share feedback: which milestone badge would you most want to earn?')">💬 Give Feedback</button>
-        </div>
+            <!-- 3. Personal bests & milestones -->
+            <div class="premium-preview-block">
+              <div class="premium-preview-header">
+                <span class="premium-preview-title">🏅 Personal Bests</span>
+                <span class="beta-tag">⭐ Premium</span>
+              </div>
+              <div class="premium-milestones-live" id="milestonesPanel"></div>
+              <p class="premium-preview-desc">Your best recorded moments — tracked automatically as you use the app each day.</p>
+            </div>
 
-        <!-- 4. Brain Balance Radar — live SVG -->
-        <div class="premium-preview-block">
-          <div class="premium-preview-header">
-            <span class="premium-preview-title">🕸 Brain Balance Radar</span>
-            <span class="beta-tag">⭐ Premium</span>
-          </div>
-          <div class="premium-radar-wrap">
-            <svg id="radarChart" viewBox="0 0 220 200" width="220" height="200"></svg>
-            <div class="radar-legend" id="radarLegend"></div>
-          </div>
-          <p class="premium-preview-desc">Today's neurochemical shape at a glance. A balanced brain shows an even polygon — lopsided shapes reveal which systems need attention.</p>
-          <button class="beta-feedback-btn" onclick="alert('Thanks for testing! Share feedback: is the radar chart easy to read and interpret?')">💬 Give Feedback</button>
-        </div>
+            <!-- 4. Brain Balance Radar -->
+            <div class="premium-preview-block">
+              <div class="premium-preview-header">
+                <span class="premium-preview-title">🕸 Brain Balance Radar</span>
+                <span class="beta-tag">⭐ Premium</span>
+              </div>
+              <div class="premium-radar-wrap">
+                <svg id="radarChart" viewBox="0 0 220 200" width="220" height="200"></svg>
+                <div class="radar-legend" id="radarLegend"></div>
+              </div>
+              <p class="premium-preview-desc">Today's neurochemical shape at a glance. A balanced brain shows an even polygon — lopsided shapes reveal which systems need attention.</p>
+            </div>
 
-        <!-- 5. Advanced NeuroCoach — live generated insights -->
-        <div class="premium-preview-block">
-          <div class="premium-preview-header">
-            <span class="premium-preview-title">🧠 Advanced NeuroCoach</span>
-            <span class="beta-tag">⭐ Premium</span>
-          </div>
-          <div class="premium-adv-insights" id="advInsightsPanel"></div>
-          <p class="premium-preview-desc">Pattern analysis, habit correlations, and proactive nudges based on your actual data — not generic advice.</p>
-          <button class="beta-feedback-btn" onclick="alert('Thanks for testing! Share feedback: which insight type was most useful or surprising?')">💬 Give Feedback</button>
-        </div>
+            <!-- 5. Advanced NeuroCoach -->
+            <div class="premium-preview-block">
+              <div class="premium-preview-header">
+                <span class="premium-preview-title">🧠 Advanced NeuroCoach</span>
+                <span class="beta-tag">⭐ Premium</span>
+              </div>
+              <div class="premium-adv-insights" id="advInsightsPanel"></div>
+              <p class="premium-preview-desc">Pattern analysis, habit correlations, and proactive nudges based on your actual data — not generic advice.</p>
+            </div>
+
+          </div><!-- /premium-collapse-body -->
+        </div><!-- /premium-collapse-wrap -->
 
       </div>
     </div>
@@ -2194,26 +2226,45 @@ function renderCoach() {
   ];
   const [, t, s] = titles.find(([min]) => score >= min) || titles[5];
 
-  const items = [];
-  if (score >= 100) {
-    items.push({ icon:'🏆', title:'Perfect Day — 100%!', body:'Every neurochemical system fired today. This is peak performance.', good: true });
-  } else {
-    items.push({ icon:'📊', title:`${Math.round(score)}% Hero Score`, body:`${100 - Math.round(score)}% to perfect day. Complete foundational habits first.`, good: score >= 65 });
-  }
-  Object.keys(HABITS).forEach(type => {
-    const eff   = catEffectivePct(type);
-    const raw   = catRawPct(type);
-    const fdnOk = foundationDone(type);
-    const tier  = !fdnOk && raw > 0 ? 'capped' : eff >= 100 ? 'max' : eff >= 60 ? 'high' : eff > 0 ? 'low' : '0';
-    const [icon, title, body] = COACH_TEXT[type][tier];
-    items.push({ icon, title, body, good: tier === 'max', type });
-  });
+  // ── Improvement summary ──────────────────────────────────────
+  const catMeta = [
+    { type:'dopamine',  name:'Dopamine',  color:'#c8712a' },
+    { type:'serotonin', name:'Serotonin', color:'#4a9e82' },
+    { type:'oxytocin',  name:'Oxytocin',  color:'#b85070' },
+    { type:'endorphin', name:'Endorphin', color:'#5a82c0' },
+  ];
+  const catActions = {
+    dopamine:  { capped: 'Complete Deep Work to unlock full gauge', 0: 'Start with 45+ min of focused work', low: 'Add another deep work session', high: 'One more habit to max out', max: 'Fully activated' },
+    serotonin: { capped: 'Complete a foundational habit to unlock', 0: 'Prioritise prayer or sleep tonight', low: 'Add a nature walk or breathwork', high: 'One more to reach full balance', max: 'Fully activated' },
+    oxytocin:  { capped: 'Complete Active Socialising to unlock', 0: 'Have one real 20-min conversation', low: 'Add a hug or act of appreciation', high: 'One small act of kindness to finish', max: 'Fully activated' },
+    endorphin: { capped: 'Complete Exercise to unlock full gauge', 0: 'Move your body — 30+ min today', low: 'Add cold shower or dancing', high: 'One more habit for full recovery', max: 'Fully activated' },
+  };
 
-  document.getElementById('insightCards').innerHTML = items.map(ins => `
-    <div class="insight-card ${ins.good ? 'good' : ''}" style="--ins-color:${ins.type ? `var(--${ins.type})` : 'var(--muted)'}">
-      <div class="insight-icon">${ins.icon}</div>
-      <div class="insight-text"><strong>${ins.title}</strong><span>${ins.body}</span></div>
-    </div>`).join('');
+  const rows = catMeta.map(c => {
+    const eff    = catEffectivePct(c.type);
+    const raw    = catRawPct(c.type);
+    const fdnOk  = foundationDone(c.type);
+    const tier   = !fdnOk && raw > 0 ? 'capped' : eff >= 100 ? 'max' : eff >= 60 ? 'high' : eff > 0 ? 'low' : '0';
+    const action = catActions[c.type][tier];
+    const isDone = tier === 'max';
+    return { ...c, eff: Math.round(eff), action, isDone };
+  }).sort((a, b) => a.eff - b.eff); // weakest first
+
+  const allDone = rows.every(r => r.isDone);
+  const headText = allDone ? '🏆 Perfect day — all systems maxed' : `Next up — focus here`;
+
+  document.getElementById('improveSummary').innerHTML = `
+    <div class="improve-summary-head">${headText}</div>
+    ${rows.map(r => `
+      <div class="improve-row ${r.isDone ? 'improve-done' : ''}">
+        <div class="improve-dot" style="background:${r.color}"></div>
+        <div class="improve-body">
+          <strong>${r.name}</strong>
+          <span>${r.action}</span>
+        </div>
+        <div class="improve-pct" style="color:${r.isDone ? 'var(--serotonin)' : r.color}">${r.isDone ? '✓' : r.eff + '%'}</div>
+      </div>`).join('')}
+  `;
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
@@ -2246,12 +2297,15 @@ function renderCoach() {
     </div>`
   ).join('');
 
-  // Render all beta premium panels
-  renderWeeklyTrend();
-  renderCatStreaks();
-  renderMilestones();
-  renderRadar();
-  renderAdvInsights();
+  // Render all beta premium panels (only if panel is open)
+  const premBody = document.getElementById('premiumCollapseBody');
+  if (premBody && premBody.style.display !== 'none') {
+    renderWeeklyTrend();
+    renderCatStreaks();
+    renderMilestones();
+    renderRadar();
+    renderAdvInsights();
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -2693,160 +2747,199 @@ async function generateShareImage() {
     { name:'Endorphin', pct: Math.round(catEffectivePct('endorphin')), color:'#5a82c0' },
   ];
 
+  // ── Build brainvatar SVG at 400×400 for canvas ──────────────
+  const tier = getBrainvatarTier(score);
+  const palettes = {
+    elite: { primary: '#4a9e82', secondary: '#5a82c0', glow: 'rgba(74,158,130,0.35)', aura: true  },
+    good:  { primary: '#c8712a', secondary: '#7c6ab8', glow: 'rgba(200,113,42,0.2)',  aura: false },
+    mid:   { primary: '#7c6ab8', secondary: '#5a82c0', glow: 'rgba(124,106,184,0.15)',aura: false },
+    low:   { primary: '#4a4640', secondary: '#3d3a33', glow: 'rgba(90,80,70,0.1)',    aura: false },
+    zero:  { primary: '#383430', secondary: '#2e2b24', glow: 'rgba(0,0,0,0)',         aura: false },
+  };
+  const p = palettes[tier];
+  const expressions = {
+    elite: { le: 'M155,220 Q162,210 170,220', re: 'M230,220 Q237,210 244,220', mouth: 'M168,255 Q200,285 232,255' },
+    good:  { le: 'M157,222 Q164,212 172,222', re: 'M228,222 Q235,212 242,222', mouth: 'M170,260 Q200,278 230,260' },
+    mid:   { le: 'M158,223 A10,10 0 1,1 178,223', re: 'M222,223 A10,10 0 1,1 242,223', mouth: 'M172,264 Q200,272 228,264' },
+    low:   { le: 'M158,222 Q166,235 174,222', re: 'M226,222 Q234,235 242,222', mouth: 'M170,268 Q200,260 230,268' },
+    zero:  { le: 'M160,222 Q167,234 174,222', re: 'M226,222 Q233,234 240,222', mouth: 'M172,268 Q200,264 228,268' },
+  };
+  const ex = expressions[tier];
+  const wrO = { elite: 0.65, good: 0.45, mid: 0.28, low: 0.12, zero: 0.07 }[tier];
+  const cx = 200, cy = 180;
+
+  const blush = tier === 'elite' ? `<ellipse cx="148" cy="248" rx="20" ry="12" fill="${p.primary}" opacity="0.28"/><ellipse cx="252" cy="248" rx="20" ry="12" fill="${p.primary}" opacity="0.28"/>` : '';
+  const sparkles = tier === 'elite' ? `<text x="55" y="72" font-size="28" opacity="0.9">✨</text><text x="316" y="80" font-size="22" opacity="0.8">⭐</text><text x="36" y="140" font-size="18" opacity="0.6">✦</text><text x="342" y="138" font-size="20" opacity="0.55">✦</text>` : '';
+  const zzz = tier === 'zero' ? `<text x="272" y="106" fill="${p.primary}" font-size="22" opacity="0.4">z</text><text x="291" y="80" fill="${p.primary}" font-size="30" opacity="0.28">z</text><text x="314" y="50" fill="${p.primary}" font-size="36" opacity="0.18">z</text>` : '';
+  const aura = p.aura ? `<circle cx="${cx}" cy="${cy}" r="182" fill="none" stroke="${p.primary}" stroke-width="4" opacity="0.15"/><circle cx="${cx}" cy="${cy}" r="170" fill="none" stroke="${p.secondary}" stroke-width="2" opacity="0.1"/>` : '';
+
+  const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+    <defs>
+      <radialGradient id="g1" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="${p.glow}"/>
+        <stop offset="100%" stop-color="transparent"/>
+      </radialGradient>
+      <radialGradient id="g2" cx="40%" cy="35%" r="65%">
+        <stop offset="0%" stop-color="${p.primary}" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="${p.secondary}" stop-opacity="0.08"/>
+      </radialGradient>
+    </defs>
+    <circle cx="${cx}" cy="${cy}" r="185" fill="url(#g1)" opacity="0.8"/>
+    ${aura}
+    <path d="M${cx},75 C138,75 95,100 90,140 C80,145 65,160 70,185 C60,200 65,230 85,240 C85,270 105,295 135,300 C145,320 165,330 185,325 C190,335 200,340 200,340 C200,340 210,335 215,325 C235,330 255,320 265,300 C295,295 315,270 315,240 C335,230 340,200 330,185 C335,160 320,145 310,140 C305,100 262,75 ${cx},75 Z"
+      fill="url(#g2)" stroke="${p.primary}" stroke-width="4.5" stroke-linejoin="round"/>
+    <path d="M130,130 Q145,115 165,125 Q180,110 200,120" fill="none" stroke="${p.primary}" stroke-width="3.5" stroke-linecap="round" opacity="${wrO}"/>
+    <path d="M235,125 Q250,110 270,125 Q280,140 265,155" fill="none" stroke="${p.secondary}" stroke-width="3.5" stroke-linecap="round" opacity="${wrO}"/>
+    <path d="M105,175 Q120,160 135,175 Q145,190 130,200" fill="none" stroke="${p.primary}" stroke-width="3" stroke-linecap="round" opacity="${wrO * 0.8}"/>
+    <path d="M275,170 Q290,155 300,175 Q305,195 290,205" fill="none" stroke="${p.secondary}" stroke-width="3" stroke-linecap="round" opacity="${wrO * 0.8}"/>
+    <path d="M155,140 Q170,130 185,140 Q195,155 180,165 Q165,175 155,160" fill="none" stroke="${p.primary}" stroke-width="2.5" stroke-linecap="round" opacity="${wrO * 0.7}"/>
+    <path d="${ex.le}" fill="none" stroke="${p.primary}" stroke-width="6" stroke-linecap="round"/>
+    <path d="${ex.re}" fill="none" stroke="${p.primary}" stroke-width="6" stroke-linecap="round"/>
+    <path d="${ex.mouth}" fill="none" stroke="${p.primary}" stroke-width="5.5" stroke-linecap="round"/>
+    ${blush}
+    ${sparkles}
+    ${zzz}
+  </svg>`;
+
   const W = 1080, H = 1080, PAD = 72;
   const canvas = document.createElement('canvas');
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext('2d');
 
-  // ── Background — #1c1a17 (app --bg) ───────────────────────
+  // Background
   ctx.fillStyle = '#1c1a17';
   ctx.fillRect(0, 0, W, H);
 
-  // Subtle radial glow matching app ambient orbs
-  const grd = ctx.createRadialGradient(W * 0.35, H * 0.25, 60, W * 0.35, H * 0.25, 550);
-  grd.addColorStop(0, 'rgba(200,113,42,0.07)');
-  grd.addColorStop(0.5, 'rgba(124,106,184,0.05)');
-  grd.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = grd;
+  // Subtle glow
+  const bgGrd = ctx.createRadialGradient(W * 0.5, H * 0.38, 60, W * 0.5, H * 0.38, 520);
+  bgGrd.addColorStop(0, `${gradeColor}18`);
+  bgGrd.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = bgGrd;
   ctx.fillRect(0, 0, W, H);
 
-  // ── Top gradient accent bar (matches app header top-bar) ──
+  // Top gradient bar
   const accentGrd = ctx.createLinearGradient(0, 0, W, 0);
-  accentGrd.addColorStop(0,    '#c8712a');
-  accentGrd.addColorStop(0.33, '#b85070');
-  accentGrd.addColorStop(0.66, '#4a9e82');
-  accentGrd.addColorStop(1,    '#5a82c0');
+  accentGrd.addColorStop(0, '#c8712a'); accentGrd.addColorStop(0.33, '#b85070');
+  accentGrd.addColorStop(0.66, '#4a9e82'); accentGrd.addColorStop(1, '#5a82c0');
   ctx.fillStyle = accentGrd;
   ctx.fillRect(0, 0, W, 8);
 
-  // ── Surface card background (--surface #242119) ───────────
+  // Card background
   ctx.fillStyle = '#242119';
-  roundRect(ctx, PAD - 20, 50, W - (PAD - 20) * 2, H - 110);
+  roundRect(ctx, PAD - 20, 50, W - (PAD - 20) * 2, H - 110, 24);
   ctx.fill();
 
-  // ── Brand: NeuroHabit ──────────────────────────────────────
+  // Brand
   ctx.fillStyle = '#e8e3d8';
   ctx.font = '600 38px system-ui, sans-serif';
   ctx.textBaseline = 'alphabetic';
   ctx.fillText('NeuroHabit', PAD, 118);
-
   ctx.fillStyle = '#7a7469';
   ctx.font = '400 17px system-ui, sans-serif';
   ctx.fillText('BY THE AUFTHORITY', PAD, 144);
 
-  // ── Date (right-aligned) ───────────────────────────────────
+  // Date
   ctx.fillStyle = '#7a7469';
   ctx.font = '400 20px system-ui, sans-serif';
   ctx.textAlign = 'right';
   ctx.fillText(dateStr, W - PAD, 118);
   ctx.textAlign = 'left';
 
-  // ── Thin rule ──────────────────────────────────────────────
-  ctx.strokeStyle = '#3d3a33';
-  ctx.lineWidth = 1;
+  // Divider
+  ctx.strokeStyle = '#3d3a33'; ctx.lineWidth = 1;
   ctx.beginPath(); ctx.moveTo(PAD, 168); ctx.lineTo(W - PAD, 168); ctx.stroke();
 
-  // ── Hero score — score number and % rendered separately ───
-  // Measure the score digits at the chosen font size, then place
-  // the % symbol immediately after with correct spacing.
-  const SCORE_SIZE = 240;
-  const PCT_SIZE   = 80;
+  // ── Brainvatar rendered from SVG into canvas ─────────────────
+  await new Promise((resolve) => {
+    const img = new Image();
+    const blob = new Blob([svgStr], { type: 'image/svg+xml' });
+    const url  = URL.createObjectURL(blob);
+    img.onload = () => {
+      // Draw brainvatar centred in upper half of card
+      const bvSize = 420;
+      const bvX    = (W - bvSize) / 2;
+      const bvY    = 168;
+      ctx.drawImage(img, bvX, bvY, bvSize, bvSize);
+      URL.revokeObjectURL(url);
+      resolve();
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(); };
+    img.src = url;
+  });
 
-  ctx.font = `300 ${SCORE_SIZE}px system-ui, sans-serif`;
-  ctx.textBaseline = 'alphabetic';
-  const scoreStr   = `${score}`;
-  const scoreWidth = ctx.measureText(scoreStr).width;
-
-  // Score digits
+  // Score number overlaid on brainvatar centre
+  const scoreStr = `${score}%`;
+  ctx.textAlign = 'center';
+  ctx.font = `300 108px system-ui, sans-serif`;
   ctx.fillStyle = gradeColor;
-  ctx.fillText(scoreStr, PAD, 420);
+  ctx.fillText(scoreStr, W / 2, 420);
 
-  // % — placed at PAD + scoreWidth + small gap, at a raised baseline
-  ctx.font = `300 ${PCT_SIZE}px system-ui, sans-serif`;
+  // State label
+  ctx.font = '600 22px system-ui, sans-serif';
   ctx.fillStyle = '#7a7469';
-  ctx.fillText('%', PAD + scoreWidth + 10, 370);
+  ctx.fillText(BRAINVATAR_CONTENT[tier].label.toUpperCase(), W / 2, 456);
+  ctx.textAlign = 'left';
 
-  // ── Grade label ────────────────────────────────────────────
+  // Grade pill area
+  const pillY = 590;
+  ctx.fillStyle = gradeColor;
   ctx.font = '600 28px system-ui, sans-serif';
-  ctx.fillStyle = gradeColor;
-  ctx.fillText(`Grade ${grade}  ·  ${gradeText}`, PAD, 466);
+  ctx.textAlign = 'center';
+  ctx.fillText(`Grade ${grade}  ·  ${gradeText}`, W / 2, pillY);
+  ctx.textAlign = 'left';
 
-  // ── Divider ────────────────────────────────────────────────
-  ctx.strokeStyle = '#3d3a33';
-  ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(PAD, 504); ctx.lineTo(W - PAD, 504); ctx.stroke();
+  // Divider
+  ctx.strokeStyle = '#3d3a33'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(PAD, pillY + 20); ctx.lineTo(W - PAD, pillY + 20); ctx.stroke();
 
-  // ── BRAIN BALANCE label ────────────────────────────────────
-  ctx.fillStyle = '#7a7469';
-  ctx.font = '500 18px system-ui, sans-serif';
-  ctx.fillText('BRAIN BALANCE', PAD, 548);
-
-  // ── Category bars ──────────────────────────────────────────
-  const trackW = W - PAD * 2;
-  const barH   = 10;
-  const rowH   = 58;
-  const startY = 570;
-
+  // Category bars (compact 2-column)
+  const colW  = (W - PAD * 2 - 40) / 2;
+  const barH  = 8;
+  const rowH  = 54;
+  const startY = pillY + 50;
   catData.forEach((cat, i) => {
-    const rowY = startY + i * rowH;
-
-    // Category name
+    const col  = i % 2;
+    const row  = Math.floor(i / 2);
+    const x    = PAD + col * (colW + 40);
+    const y    = startY + row * rowH;
     ctx.fillStyle = '#7a7469';
     ctx.font = '400 20px system-ui, sans-serif';
     ctx.textBaseline = 'alphabetic';
-    ctx.fillText(cat.name, PAD, rowY);
-
-    // Percentage (right-aligned)
+    ctx.fillText(cat.name, x, y);
     ctx.fillStyle = cat.color;
     ctx.font = '600 20px system-ui, sans-serif';
     ctx.textAlign = 'right';
-    ctx.fillText(`${cat.pct}%`, W - PAD, rowY);
+    ctx.fillText(`${cat.pct}%`, x + colW, y);
     ctx.textAlign = 'left';
-
-    // Track background (--surface2 #2e2b24)
-    const trackY = rowY + 9;
-    roundRect(ctx, PAD, trackY, trackW, barH, 5);
-    ctx.fillStyle = '#2e2b24';
-    ctx.fill();
-
-    // Filled portion
-    const fillW = Math.max(0, (cat.pct / 100) * trackW);
-    if (fillW > 0) {
-      roundRect(ctx, PAD, trackY, fillW, barH, 5);
-      ctx.fillStyle = cat.color;
-      ctx.fill();
-    }
+    const trackY = y + 8;
+    roundRect(ctx, x, trackY, colW, barH, 4);
+    ctx.fillStyle = '#2e2b24'; ctx.fill();
+    const fw = Math.max(0, (cat.pct / 100) * colW);
+    if (fw > 0) { roundRect(ctx, x, trackY, fw, barH, 4); ctx.fillStyle = cat.color; ctx.fill(); }
   });
 
-  // ── Divider ────────────────────────────────────────────────
-  const afterBarsY = startY + catData.length * rowH + 4;
-  ctx.strokeStyle = '#3d3a33';
-  ctx.lineWidth = 1;
+  // Brain balance feedback
+  const afterBarsY = startY + 2 * rowH + 18;
+  ctx.strokeStyle = '#3d3a33'; ctx.lineWidth = 1;
   ctx.beginPath(); ctx.moveTo(PAD, afterBarsY); ctx.lineTo(W - PAD, afterBarsY); ctx.stroke();
-
-  // ── Brain balance feedback ─────────────────────────────────
-  const feedbackY = afterBarsY + 32;
   ctx.fillStyle = '#e8e3d8';
-  ctx.font = 'italic 400 22px system-ui, sans-serif';
+  ctx.font = 'italic 400 21px system-ui, sans-serif';
   ctx.textBaseline = 'alphabetic';
-  wrapText(ctx, getBrainBalanceFeedback(), PAD, feedbackY, trackW, 34);
+  wrapText(ctx, getBrainBalanceFeedback(), PAD, afterBarsY + 30, W - PAD * 2, 33);
 
-  // ── Footer ─────────────────────────────────────────────────
+  // Footer
   ctx.fillStyle = '#504c45';
   ctx.font = '400 18px system-ui, sans-serif';
   ctx.textAlign = 'center';
-  ctx.textBaseline = 'alphabetic';
   ctx.fillText('neurohabit.app  ·  by The Aufthority', W / 2, H - 46);
   ctx.textAlign = 'left';
 
-  // ── Export ─────────────────────────────────────────────────
+  // Export
   canvas.toBlob(async (blob) => {
     const file = new File([blob], 'neurohabit-score.png', { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({ files: [file], title: 'My NeuroHabit Score', text: buildShareText() });
-        return;
-      } catch (e) { /* fall through */ }
+      try { await navigator.share({ files: [file], title: 'My NeuroHabit Score', text: buildShareText() }); return; }
+      catch (e) { /* fall through */ }
     }
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -3226,9 +3319,26 @@ if ('serviceWorker' in navigator) {
    (guest sessions fall through via userData.skipAuth check)
    ═══════════════════════════════════════════════════════════ */
 
+function togglePremiumPanel() {
+  const body = document.getElementById('premiumCollapseBody');
+  const btn  = document.getElementById('premiumToggleBtn');
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  btn.classList.toggle('open', !isOpen);
+  // Render panels when opened for first time so they load on demand
+  if (!isOpen) {
+    renderWeeklyTrend();
+    renderCatStreaks();
+    renderMilestones();
+    renderRadar();
+    renderAdvInsights();
+  }
+}
+
 /* ═══════════════════════════════════════════════════════════
    EXPOSE FUNCTIONS GLOBALLY (required for onclick handlers)
    ═══════════════════════════════════════════════════════════ */
+window.togglePremiumPanel  = togglePremiumPanel;
 window.showToast          = showToast;
 window.signInWithGoogle   = signInWithGoogle;
 window.skipLogin          = skipLogin;

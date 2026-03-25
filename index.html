@@ -185,51 +185,6 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
 .max-note { display: none; align-items: center; gap: 7px; margin: 3px 14px 4px; padding: 7px 12px; background: color-mix(in srgb, var(--serotonin) 10%, var(--surface2)); border: 1px solid color-mix(in srgb, var(--serotonin) 28%, transparent); border-radius: var(--radius-sm); font-size: 12px; color: var(--serotonin); }
 .max-note.show { display: flex; }
 
-/* ═══ COMMIT BAR (Revision 5) ════════════════════════════════ */
-.commit-bar {
-  margin: 8px 14px 6px;
-  padding: 11px 14px;
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.commit-bar-text { flex: 1; font-size: 12px; color: var(--muted); line-height: 1.4; }
-.commit-bar-text strong { display: block; font-size: 13px; color: var(--text); margin-bottom: 1px; }
-.commit-btn {
-  padding: 7px 14px; border-radius: 8px; border: none;
-  font-family: 'Geist', sans-serif; font-size: 12px; font-weight: 600;
-  cursor: pointer; transition: all 0.2s; flex-shrink: 0;
-  background: var(--ac, #888); color: #fff;
-}
-.commit-btn:active { transform: scale(0.95); }
-.commit-btn.committed {
-  background: var(--surface2);
-  color: var(--locked);
-  border: 1px solid var(--border2);
-  cursor: default;
-}
-.commit-edit-btn {
-  padding: 7px 12px; border-radius: 8px;
-  border: 1px solid var(--border2); background: none;
-  color: var(--muted); font-family: 'Geist', sans-serif;
-  font-size: 11px; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
-}
-.commit-edit-btn:hover { color: var(--text); }
-.commit-edit-btn.hidden { display: none; }
-.commit-timer { font-size: 10px; color: var(--warning); margin-top: 2px; display: none; }
-.commit-timer.show { display: block; }
-.locked-overlay {
-  position: absolute; inset: 0; border-radius: var(--radius);
-  cursor: not-allowed;
-  z-index: 2;
-}
-/* Locked section dim */
-.habit-list.section-locked .habit-row:not(.done) { opacity: 0.38; pointer-events: none; }
-.habit-list.section-locked .habit-row.done { pointer-events: none; }
-
 /* ═══ HABIT ROWS ════════════════════════════════════════════  */
 .habit-list { padding: 4px 14px; display: flex; flex-direction: column; gap: 5px; }
 .habit-row { display: flex; align-items: center; gap: 11px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 13px; cursor: pointer; user-select: none; transition: background 0.15s, border-color 0.15s, transform 0.12s; position: relative; overflow: hidden; -webkit-user-select: none; }
@@ -769,7 +724,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
 @media (min-width: 520px) {
   .habit-list, .pips-row { padding-left: 20px; padding-right: 20px; }
   .page-hero, .coach-page-inner { padding-left: 22px; padding-right: 22px; }
-  .commit-bar, .max-note { margin-left: 16px; margin-right: 16px; }
+  .max-note { margin-left: 16px; margin-right: 16px; }
 }
 @media (min-width: 720px) {
   .page-container, .coach-page-inner { max-width: 680px; margin-left: auto; margin-right: auto; }
@@ -960,15 +915,6 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
       </div>
       <div class="pips-row" id="pips-dopamine" style="--ac:var(--dopamine)"></div>
       <div class="max-note" id="mn-dopamine">✅ Dopamine maxed out!</div>
-      <div class="commit-bar" id="commitbar-dopamine" style="--ac:var(--dopamine)">
-        <div class="commit-bar-text">
-          <strong>Commit your Dopamine habits</strong>
-          <span>Lock in your choices for accountability.</span>
-          <div class="commit-timer" id="committimer-dopamine"></div>
-        </div>
-        <button class="commit-edit-btn hidden" id="commiteditn-dopamine" onclick="editCommit('dopamine')">Edit</button>
-        <button class="commit-btn" id="commitbtn-dopamine" onclick="commitSection('dopamine')">Commit</button>
-      </div>
       <div class="habit-list" id="list-dopamine"></div>
     </div>
 
@@ -991,15 +937,6 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
       </div>
       <div class="pips-row" id="pips-serotonin" style="--ac:var(--serotonin)"></div>
       <div class="max-note" id="mn-serotonin">✅ Serotonin maxed out!</div>
-      <div class="commit-bar" id="commitbar-serotonin" style="--ac:var(--serotonin)">
-        <div class="commit-bar-text">
-          <strong>Commit your Serotonin habits</strong>
-          <span>Lock in your choices for accountability.</span>
-          <div class="commit-timer" id="committimer-serotonin"></div>
-        </div>
-        <button class="commit-edit-btn hidden" id="commiteditn-serotonin" onclick="editCommit('serotonin')">Edit</button>
-        <button class="commit-btn" id="commitbtn-serotonin" onclick="commitSection('serotonin')">Commit</button>
-      </div>
       <div class="habit-list" id="list-serotonin"></div>
     </div>
 
@@ -1022,15 +959,6 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
       </div>
       <div class="pips-row" id="pips-oxytocin" style="--ac:var(--oxytocin)"></div>
       <div class="max-note" id="mn-oxytocin">✅ Oxytocin maxed out!</div>
-      <div class="commit-bar" id="commitbar-oxytocin" style="--ac:var(--oxytocin)">
-        <div class="commit-bar-text">
-          <strong>Commit your Oxytocin habits</strong>
-          <span>Lock in your choices for accountability.</span>
-          <div class="commit-timer" id="committimer-oxytocin"></div>
-        </div>
-        <button class="commit-edit-btn hidden" id="commiteditn-oxytocin" onclick="editCommit('oxytocin')">Edit</button>
-        <button class="commit-btn" id="commitbtn-oxytocin" onclick="commitSection('oxytocin')">Commit</button>
-      </div>
       <div class="habit-list" id="list-oxytocin"></div>
     </div>
 
@@ -1053,15 +981,6 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
       </div>
       <div class="pips-row" id="pips-endorphin" style="--ac:var(--endorphin)"></div>
       <div class="max-note" id="mn-endorphin">✅ Endorphin maxed out!</div>
-      <div class="commit-bar" id="commitbar-endorphin" style="--ac:var(--endorphin)">
-        <div class="commit-bar-text">
-          <strong>Commit your Endorphin habits</strong>
-          <span>Lock in your choices for accountability.</span>
-          <div class="commit-timer" id="committimer-endorphin"></div>
-        </div>
-        <button class="commit-edit-btn hidden" id="commiteditn-endorphin" onclick="editCommit('endorphin')">Edit</button>
-        <button class="commit-btn" id="commitbtn-endorphin" onclick="commitSection('endorphin')">Commit</button>
-      </div>
       <div class="habit-list" id="list-endorphin"></div>
     </div>
 
@@ -1156,7 +1075,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
             <div class="profile-row-icon">🌅</div>
             <div class="profile-row-body">
               <strong>New Day — Reset Today</strong>
-              <span>Clear all of today's habits and commits</span>
+              <span>Clear all of today's habits</span>
             </div>
             <svg class="profile-row-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </div>
@@ -1214,7 +1133,6 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
       <p><strong>Foundational Gate</strong>: Any single ⭐⭐⭐ habit unlocks the full gauge. Until then, gauge is capped at 50%.</p>
       <p><strong>Serotonin exception</strong>: Has 3 foundational habits — completing ANY ONE of them unlocks the full gauge.</p>
       <p><strong>Flex Mode</strong>: Long-press or tap Flex to reduce a habit's weight on harder days.</p>
-      <p><strong>Commit</strong>: Lock in your daily choices for accountability. You can edit once within 60 minutes.</p>
       <p><strong>Hero Score</strong> = average of all four effective category percentages.</p>
     </div>
   </div>
@@ -1531,7 +1449,6 @@ const SK  = 'nh_pwa_state';
 const STK = 'nh_pwa_streak';
 const WK  = 'nh_pwa_week';
 const UK  = 'nh_pwa_user';
-const CK  = 'nh_pwa_commits'; /* REVISION 5: commit state */
 
 const ld = k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
 const sv = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -1540,11 +1457,9 @@ let appState  = ld(SK)  || {};
 let streak    = ld(STK) || { count: 0, lastDate: null };
 let weekData  = ld(WK)  || {};
 let userData  = ld(UK)  || { name: null, skipAuth: false };
-let commitData= ld(CK)  || {}; /* { dopamine: { ts: timestamp }, ... } */
 
 const today = new Date().toISOString().slice(0, 10);
-if (!appState[today])   appState[today]   = {};
-if (!commitData[today]) commitData[today] = {};
+if (!appState[today]) appState[today] = {};
 
 /* ═══════════════════════════════════════════════════════════
    SCORING ENGINE
@@ -1623,10 +1538,8 @@ function heroScore() {
    Handles both classic flex (boolean) and multiSession flex (tier)
    ═══════════════════════════════════════════════════════════ */
 function renderSection(type) {
-  const list     = document.getElementById(`list-${type}`);
-  const isLocked = isSectionLocked(type);
+  const list = document.getElementById(`list-${type}`);
   list.innerHTML = '';
-  list.classList.toggle('section-locked', isLocked);
 
   HABITS[type].habits.forEach((h, i) => {
     const key      = `${type}_${i}`;
@@ -1664,21 +1577,19 @@ function renderSection(type) {
 
     // Build flex control HTML
     let flexCtrlHTML = '';
-    if (!isLocked) {
-      if (isMulti) {
-        // Session tier cycler: shows current tier and arrows to cycle
-        const tierLabel = tierIdx === 0
-          ? 'Set sessions'
-          : `${h.flex.tiers[tierIdx-1].sessions}+ sessions`;
-        flexCtrlHTML = `
-          <div class="session-flex-ctrl">
-            <button class="session-tier-btn" data-dir="-1" title="Fewer sessions">‹</button>
-            <span class="session-tier-label">${tierLabel}</span>
-            <button class="session-tier-btn" data-dir="1" title="More sessions">›</button>
-          </div>`;
-      } else if (h.flex) {
-        flexCtrlHTML = `<button class="flex-toggle-btn ${isFlex ? 'active' : ''}">Flex ${isFlex ? 'ON' : 'OFF'}</button>`;
-      }
+    if (isMulti) {
+      // Session tier cycler: shows current tier and arrows to cycle
+      const tierLabel = tierIdx === 0
+        ? 'Set sessions'
+        : `${h.flex.tiers[tierIdx-1].sessions}+ sessions`;
+      flexCtrlHTML = `
+        <div class="session-flex-ctrl">
+          <button class="session-tier-btn" data-dir="-1" title="Fewer sessions">‹</button>
+          <span class="session-tier-label">${tierLabel}</span>
+          <button class="session-tier-btn" data-dir="1" title="More sessions">›</button>
+        </div>`;
+    } else if (h.flex) {
+      flexCtrlHTML = `<button class="flex-toggle-btn ${isFlex ? 'active' : ''}">Flex ${isFlex ? 'ON' : 'OFF'}</button>`;
     }
 
     row.innerHTML = `
@@ -1706,43 +1617,41 @@ function renderSection(type) {
         ${flexCtrlHTML}
       </div>`;
 
-    if (!isLocked) {
-      // Tap to toggle done state
-      row.addEventListener('click', (e) => {
-        if (e.target.closest('.habit-info-btn') ||
-            e.target.closest('.flex-toggle-btn') ||
-            e.target.closest('.session-flex-ctrl')) return;
-        toggleHabit(key, type, i);
-      });
-      // Long-press → neuro tooltip
-      let pressTimer;
-      row.addEventListener('pointerdown', (e) => {
-        if (e.target.closest('.habit-info-btn') ||
-            e.target.closest('.flex-toggle-btn') ||
-            e.target.closest('.session-flex-ctrl')) return;
-        pressTimer = setTimeout(() => showTooltip(h.tooltip), 500);
-      });
-      row.addEventListener('pointerup',    () => clearTimeout(pressTimer));
-      row.addEventListener('pointerleave', () => clearTimeout(pressTimer));
+    // Tap to toggle done state
+    row.addEventListener('click', (e) => {
+      if (e.target.closest('.habit-info-btn') ||
+          e.target.closest('.flex-toggle-btn') ||
+          e.target.closest('.session-flex-ctrl')) return;
+      toggleHabit(key, type, i);
+    });
+    // Long-press → neuro tooltip
+    let pressTimer;
+    row.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('.habit-info-btn') ||
+          e.target.closest('.flex-toggle-btn') ||
+          e.target.closest('.session-flex-ctrl')) return;
+      pressTimer = setTimeout(() => showTooltip(h.tooltip), 500);
+    });
+    row.addEventListener('pointerup',    () => clearTimeout(pressTimer));
+    row.addEventListener('pointerleave', () => clearTimeout(pressTimer));
 
-      // Classic flex toggle
-      const flexBtn = row.querySelector('.flex-toggle-btn');
-      if (flexBtn) {
-        flexBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          toggleFlex(flexKey, type, i);
-        });
-      }
-
-      // Multi-session tier cycler buttons
-      row.querySelectorAll('.session-tier-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const dir = parseInt(btn.dataset.dir);
-          cycleTier(tierKey, type, i, dir);
-        });
+    // Classic flex toggle
+    const flexBtn = row.querySelector('.flex-toggle-btn');
+    if (flexBtn) {
+      flexBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleFlex(flexKey, type, i);
       });
     }
+
+    // Multi-session tier cycler buttons
+    row.querySelectorAll('.session-tier-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const dir = parseInt(btn.dataset.dir);
+        cycleTier(tierKey, type, i, dir);
+      });
+    });
 
     // Info button — inline expand instead of modal
     const infoBtn = row.querySelector('.habit-info-btn');
@@ -1763,7 +1672,6 @@ function renderSection(type) {
   });
 
   updateCatUI(type);
-  updateCommitUI(type);
 
   // Progressive disclosure — hide non-foundational habits by default
   const allRows = list.querySelectorAll('.habit-row');
@@ -1811,7 +1719,6 @@ function showHabitInfo(h) {
    TOGGLE
    ═══════════════════════════════════════════════════════════ */
 function toggleHabit(key, type, idx) {
-  if (isSectionLocked(type)) return;
   appState[today][key] = !appState[today][key];
   sv(SK, appState);
   if (appState[today][key] && HABITS[type].habits[idx].foundational) {
@@ -1827,7 +1734,6 @@ function toggleHabit(key, type, idx) {
 }
 
 function toggleFlex(flexKey, type, idx) {
-  if (isSectionLocked(type)) return;
   appState[today][flexKey] = !appState[today][flexKey];
   sv(SK, appState);
   haptic('medium');
@@ -1843,7 +1749,6 @@ function toggleFlex(flexKey, type, idx) {
  * Automatically marks habit as done when any tier is set.
  */
 function cycleTier(tierKey, type, idx, dir) {
-  if (isSectionLocked(type)) return;
   const h        = HABITS[type].habits[idx];
   const maxTiers = h.flex.tiers.length;
   const current  = appState[today][tierKey] || 0;
@@ -1862,130 +1767,6 @@ function cycleTier(tierKey, type, idx, dir) {
   checkStreak();
   maybeCelebrate();
 }
-
-/* ═══════════════════════════════════════════════════════════
-   REVISION 5: COMMIT / LOCK SYSTEM
-   Rules:
-     - Commit locks the section for the rest of the day
-     - A one-time Edit is allowed within 60 minutes of committing
-     - After 60 min, the section is permanently locked for that day
-   ═══════════════════════════════════════════════════════════ */
-const EDIT_WINDOW_MS = 60 * 60 * 1000; // 60 minutes
-
-function isSectionLocked(type) {
-  const c = commitData[today][type];
-  if (!c) return false;
-  // If edit mode was granted and is still within window, not locked
-  if (c.editMode) {
-    const elapsed = Date.now() - c.ts;
-    if (elapsed < EDIT_WINDOW_MS) return false;
-    // Edit window expired — lock permanently
-    c.editMode = false;
-    sv(CK, commitData);
-    return true;
-  }
-  return true; // committed and not in edit mode
-}
-
-function commitSection(type) {
-  commitData[today][type] = { ts: Date.now(), editMode: false };
-  sv(CK, commitData);
-  haptic('heavy');
-  updateCommitUI(type);
-  renderSection(type); // re-render locked state
-}
-
-function editCommit(type) {
-  const c = commitData[today][type];
-  if (!c) return;
-  const elapsed = Date.now() - c.ts;
-  if (elapsed > EDIT_WINDOW_MS) {
-    showToast('The 60-minute edit window has passed. This entry is now locked.', 'info');
-    return;
-  }
-  c.editMode = true;
-  sv(CK, commitData);
-  haptic('medium');
-  updateCommitUI(type);
-  renderSection(type);
-  // Auto-lock again when window expires
-  const remaining = EDIT_WINDOW_MS - elapsed;
-  setTimeout(() => {
-    if (commitData[today][type]?.editMode) {
-      commitData[today][type].editMode = false;
-      sv(CK, commitData);
-      renderSection(type);
-      updateCommitUI(type);
-    }
-  }, remaining);
-}
-
-function updateCommitUI(type) {
-  const c       = commitData[today][type];
-  const btn     = document.getElementById(`commitbtn-${type}`);
-  const editBtn = document.getElementById(`commiteditn-${type}`);
-  const timer   = document.getElementById(`committimer-${type}`);
-  const barText = document.querySelector(`#commitbar-${type} .commit-bar-text > span`);
-
-  if (!c) {
-    // Not committed yet
-    btn.textContent = 'Commit';
-    btn.classList.remove('committed');
-    editBtn.classList.add('hidden');
-    timer.classList.remove('show');
-    if (barText) barText.textContent = 'Lock in your choices for accountability.';
-    return;
-  }
-
-  const elapsed   = Date.now() - c.ts;
-  const remaining = EDIT_WINDOW_MS - elapsed;
-  const inWindow  = remaining > 0;
-
-  if (c.editMode && inWindow) {
-    // Currently in edit mode
-    btn.textContent = 'Re-commit';
-    btn.classList.remove('committed');
-    editBtn.classList.add('hidden');
-    const mins = Math.ceil(remaining / 60000);
-    timer.textContent = `Edit window closes in ${mins} min`;
-    timer.classList.add('show');
-    if (barText) barText.textContent = 'Make your changes, then re-commit.';
-  } else {
-    // Committed and locked
-    btn.textContent = '🔒 Committed';
-    btn.classList.add('committed');
-    btn.onclick = null; // disable
-
-    if (inWindow) {
-      editBtn.classList.remove('hidden');
-      const mins = Math.ceil(remaining / 60000);
-      timer.textContent = `Edit available for ${mins} more min`;
-      timer.classList.add('show');
-    } else {
-      editBtn.classList.add('hidden');
-      timer.classList.remove('show');
-    }
-    if (barText) barText.textContent = 'Committed for today. Well done.';
-  }
-}
-
-// Re-bind commit button after it may have been cleared
-function bindCommitBtn(type) {
-  const btn = document.getElementById(`commitbtn-${type}`);
-  if (btn && !commitData[today][type]) {
-    btn.onclick = () => commitSection(type);
-  }
-}
-
-// Refresh commit timers every minute
-setInterval(() => {
-  Object.keys(HABITS).forEach(type => {
-    if (commitData[today][type]) {
-      updateCommitUI(type);
-      bindCommitBtn(type);
-    }
-  });
-}, 60000);
 
 /* ═══════════════════════════════════════════════════════════
    UPDATE CATEGORY UI
@@ -3054,15 +2835,15 @@ function initApp() {
   const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   document.getElementById('headerDate').textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
-  Object.keys(HABITS).forEach(t => { renderSection(t); updateCommitUI(t); });
+  Object.keys(HABITS).forEach(t => { renderSection(t); });
   updateHeader(); renderCoach(); renderWeek(); checkStreak(); renderProfile();
 }
 
 function confirmNewDay() {
-  if (!confirm('Start a fresh day? Clears all of today\'s completions and commits.')) return;
-  appState[today] = {}; weekData[today] = 0; commitData[today] = {};
-  sv(SK, appState); sv(WK, weekData); sv(CK, commitData);
-  Object.keys(HABITS).forEach(t => { renderSection(t); updateCommitUI(t); });
+  if (!confirm('Start a fresh day? Clears all of today\'s completions.')) return;
+  appState[today] = {}; weekData[today] = 0;
+  sv(SK, appState); sv(WK, weekData);
+  Object.keys(HABITS).forEach(t => { renderSection(t); });
   updateHeader(); renderCoach(); renderWeek();
 }
 
@@ -3098,8 +2879,6 @@ window.signInWithGoogle   = signInWithGoogle;
 window.skipLogin          = skipLogin;
 window.handleSignOut      = handleSignOut;
 window.closeModal         = closeModal;
-window.commitSection      = commitSection;
-window.editCommit         = editCommit;
 window.editProfile        = editProfile;
 window.changePassword     = changePassword;
 window.confirmNewDay      = confirmNewDay;

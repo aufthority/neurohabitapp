@@ -425,14 +425,17 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
   font-family: 'Instrument Serif', serif; font-weight: 400;
 }
 .profile-name { font-family: 'Instrument Serif', serif; font-size: 20px; font-weight: 400; line-height: 1.1; }
-.profile-email { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.profile-email { font-size: 12px; color: var(--muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .profile-badge {
   margin-left: auto; flex-shrink: 0;
   font-size: 10px; font-weight: 600; letter-spacing: 0.5px;
-  padding: 4px 10px; border-radius: 20px;
+  padding: 3px 8px; border-radius: 20px;
   background: color-mix(in srgb, var(--coach) 12%, var(--surface2));
   border: 1px solid color-mix(in srgb, var(--coach) 28%, transparent);
   color: var(--coach); text-transform: uppercase;
+  white-space: nowrap; max-width: 72px;
+  overflow: hidden; text-overflow: ellipsis;
+  align-self: flex-start;
 }
 
 /* Section header */
@@ -545,9 +548,9 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
 .beta-tag {
   font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
   padding: 3px 8px; border-radius: 20px;
-  background: color-mix(in srgb, var(--serotonin) 12%, var(--surface2));
-  border: 1px solid color-mix(in srgb, var(--serotonin) 30%, transparent);
-  color: var(--serotonin); flex-shrink: 0;
+  background: color-mix(in srgb, var(--warning) 12%, var(--surface2));
+  border: 1px solid color-mix(in srgb, var(--warning) 30%, transparent);
+  color: var(--warning); flex-shrink: 0;
 }
 .premium-preview-desc { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 10px; }
 .beta-feedback-btn {
@@ -839,7 +842,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
         <div class="premium-preview-block">
           <div class="premium-preview-header">
             <span class="premium-preview-title">📈 Weekly Score Trend</span>
-            <span class="beta-tag">🧪 Beta</span>
+            <span class="beta-tag">⭐ Premium</span>
           </div>
           <div class="premium-chart-live" id="weeklyTrendChart"></div>
           <p class="premium-preview-desc">Your Hero Score across this week. Spot patterns, protect your streak, and understand what a strong day looks like for your brain.</p>
@@ -850,7 +853,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
         <div class="premium-preview-block">
           <div class="premium-preview-header">
             <span class="premium-preview-title">🔥 Category Streaks</span>
-            <span class="beta-tag">🧪 Beta</span>
+            <span class="beta-tag">⭐ Premium</span>
           </div>
           <div class="premium-cat-streaks" id="catStreaksPanel"></div>
           <p class="premium-preview-desc">Consecutive days you hit each neurochemical category (≥50% score). See where you're consistent and where you need more focus.</p>
@@ -861,7 +864,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
         <div class="premium-preview-block">
           <div class="premium-preview-header">
             <span class="premium-preview-title">🏅 Personal Bests</span>
-            <span class="beta-tag">🧪 Beta</span>
+            <span class="beta-tag">⭐ Premium</span>
           </div>
           <div class="premium-milestones-live" id="milestonesPanel"></div>
           <p class="premium-preview-desc">Your best recorded moments — tracked automatically as you use the app each day.</p>
@@ -872,7 +875,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
         <div class="premium-preview-block">
           <div class="premium-preview-header">
             <span class="premium-preview-title">🕸 Brain Balance Radar</span>
-            <span class="beta-tag">🧪 Beta</span>
+            <span class="beta-tag">⭐ Premium</span>
           </div>
           <div class="premium-radar-wrap">
             <svg id="radarChart" viewBox="0 0 220 200" width="220" height="200"></svg>
@@ -886,7 +889,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
         <div class="premium-preview-block">
           <div class="premium-preview-header">
             <span class="premium-preview-title">🧠 Advanced NeuroCoach</span>
-            <span class="beta-tag">🧪 Beta</span>
+            <span class="beta-tag">⭐ Premium</span>
           </div>
           <div class="premium-adv-insights" id="advInsightsPanel"></div>
           <p class="premium-preview-desc">Pattern analysis, habit correlations, and proactive nudges based on your actual data — not generic advice.</p>
@@ -991,7 +994,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Geist', system-u
         <!-- Avatar + name -->
         <div class="profile-avatar-block">
           <div class="profile-avatar" id="profileAvatar">?</div>
-          <div>
+          <div style="flex:1;min-width:0;overflow:hidden;">
             <div class="profile-name" id="profileName">Guest</div>
             <div class="profile-email" id="profileEmail">Not signed in</div>
           </div>
